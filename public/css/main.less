@@ -14,6 +14,10 @@
   -moz-box-shadow: @a, @b;
   box-shadow: @a, @b;
 }
+/* Variables */
+@heightAdj: 100px;
+@whiteHeight: 460px - @heightAdj;
+@blackHeight: 320px - @heightAdj;
 
 /* The CSS */
 #piano {
@@ -81,7 +85,7 @@
         &.white {
           float: left;
           width: 88px;
-          height: 460px;
+          height: @whiteHeight;
           background-color: #F4F4F4;
           border: 1px solid #626262;
           position: relative;
@@ -110,7 +114,7 @@
         &.black {
           float: left;
           width: 44px;
-          height: 320px;
+          height: @blackHeight;
           background-color: black;
           border-bottom: 2px solid black;
           border-left: 2px solid black;
@@ -145,6 +149,25 @@
           }
         }
       }
+    }
+  }
+}
+
+#menu {
+  width: 100%;
+  position: fixed;
+  left: 0px;
+  background-color: #CFCFCF;
+  padding: 7px;
+
+  div {
+    display: inline;
+    background-color: #69AA35;
+    cursor:pointer;
+    font-family: Verdana, arial, helvetica, sans-serif;
+    padding: 3px;
+    &:active, &.pressed {
+      background-color: #4DBDCB;
     }
   }
 }

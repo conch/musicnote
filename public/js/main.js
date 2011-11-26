@@ -1,10 +1,24 @@
 var PIANO_KEYS = 88;
 
 $(document).ready(function() {
-
+  // position the menu bar
+  $("#menu").css("top", $("#piano").height() + 100 + "px");
+  $("#menu div").click(function() {
+    buttonId = $(this).attr("id");
+    if (buttonId == "transcribe") { // start or stop transcribing
+      $(this).toggleClass("pressed");
+    } else if (buttonId == "reset") { // erase what's been transcribed so far
+      $("#transcribe").removeClass("pressed");
+    } else { // view sheet music
+      window.location.href = "sheet_music";
+    }
+  })
   $(".key").mousedown(function () {
     toneId = $(this).attr('id');
     play_multi_sound("tone-" + toneId);
+    // regex = /(\d+)\D+/;
+    // match = regex.exec(toneId);
+    // console.log(match[1] < 3);
   });
 
   $(".key").mouseup(function () {
