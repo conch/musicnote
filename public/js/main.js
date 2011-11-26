@@ -2,25 +2,15 @@ var PIANO_KEYS = 88;
 
 $(document).ready(function() {
 
-  $(".white").mousedown(function () {
+  $(".key").mousedown(function () {
     toneId = $(this).attr('id');
-    play_multi_sound('tone-'+toneId);
-   });
+    play_multi_sound("tone-" + toneId);
+  });
 
-  $(".white").mouseup(function () {
+  $(".key").mouseup(function () {
       toneId = $(this).attr('id');
       // stop_multi_sound('tone-' + toneId, 'mouse');
    });
-   
-  $(".black").mousedown(function () {
-      toneId = $(this).attr('id');
-      play_multi_sound('tone-' + toneId);
-   });
-
-  $(".black").mouseup(function () {
-      toneId = $(this).attr('id');
-      stop_multi_sound('tone-' + toneId, 'mouse');
-  });
 
   //Toggles and other stuffs
   $("#piano div.keyname").hide();
