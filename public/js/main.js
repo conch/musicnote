@@ -1,6 +1,6 @@
 var PIANO_KEYS = 88;
-var trebleNotes = []; // queue that keeps track of the notes that have been recorded in the treble staff
-var bassNotes = []; // queue that keeps track of the notes in the bass staff
+var notes = []; // queue that keeps track of the notes that have been recorded
+var currentNote = []; // holds the current note or chord. each element is an array of tuples. each tuple has the form (toneId, time).
 
 $(document).ready(function() {
   // create the menu bar
@@ -15,8 +15,8 @@ $(document).ready(function() {
       $("#record").removeClass("pressed");
       $("#recordOrPause").addClass("record");
       $("#recordOrPause").removeClass("pause");
-      trebleNotes = [];
-      bassNotes = [];
+      notes = [];
+      currentNote = [];
     } else if (buttonId == "view") { // view sheet music
       window.location.href = "sheet_music";
     } else if (buttonId == "toggleKeyNames") {
@@ -29,22 +29,9 @@ $(document).ready(function() {
   });
 
   // configure key presses
-  $(".key").mousedown(function () {
-    toneId = $(this).attr('id');
-    play_multi_sound("tone-" + toneId);
-    // record if the record button is down
-    if ($("#record").hasClass("pressed")) {
-      // toneId is the octave number plus the note, so middle C (fourth octave) is "3C"
-      // octave numbers are zero-indexed
-      regex = /(\d+)\D+/;
-      match = regex.exec(toneId);
-      // match[1] is the number of the octave
-      if (match[1] < 3) { // notes in the bass staff
-        trebleNotes.push(toneId);
-      } else { // treble
-        bassNotes.push(toneId);
-      }
-    }
+  $(".key").mousedown(function() {
+    toneId = $(this).attr("id");
+    pressNote(toneId);
   });
 
   //Toggles and other stuffs
@@ -71,7 +58,7 @@ for (i = 0; i < keyboardKeys.length; i++) {
       if(evt.data.flag) {
         evt.data.flag = false;
         $(evt.data.value).addClass('pressed');
-        play_multi_sound(evt.data.sound);
+        pressNote(evt.data.sound);
       }
       return false;
     });
@@ -94,18 +81,21 @@ for (a = 0; a < channel_max; a++) { // prepare the channels
   audiochannels[a]['channel'] = new Audio(); // create a new audio object
   audiochannels[a]['finished'] = -1; // expected end time for this channel
   audiochannels[a]['keyvalue'] = '';
+  audiochannels[a]['start'] = -1;
 }
 
-//PLAY SOUND
+// play audio
 function play_multi_sound(s) {
+  thistime = new Date();
+  currentTime = thistime.getTime();
   for (a = 0; a < audiochannels.length; a++) {
-    thistime = new Date();
-    if (audiochannels[a]['finished'] < thistime.getTime()) { // is this channel finished?
+    if (audiochannels[a]['finished'] < currentTime) { // is this channel finished?
       try {
-        audiochannels[a]['finished'] = thistime.getTime() + document.getElementById(s).duration*1000;
+        audiochannels[a]['start'] = currentTime;
+        audiochannels[a]['finished'] = currentTime + document.getElementById(s).duration*1000;
         audiochannels[a]['channel'] = document.getElementById(s);
         audiochannels[a]['channel'].currentTime = 0;
-        audiochannels[a]['channel'].volume=1;
+        audiochannels[a]['channel'].volume = 1;
         audiochannels[a]['channel'].play();
         audiochannels[a]['keyvalue'] = s;
       }
@@ -117,27 +107,29 @@ function play_multi_sound(s) {
   }
 }
 
-function stop_multi_sound(s, sender) {
-  for (a = 0; a < audiochannels.length; a++) {
-    if (audiochannels[a]['keyvalue'] == s) { // is this channel finished?
-      try {
-        audiochannels[a]['channel'] = document.getElementById(s);
+var pressNote = function(toneId) {
+  regex = /tone-(.+)/;
+  match = regex.exec(toneId);
+  if (!match) {
+    toneId = "tone-" + toneId;
+  }
+  play_multi_sound(toneId);
 
-        // audiochannels[a]['channel'].currentTime =  audiochannels[a]['channel'].duration;
-        // audiochannels[a]['keyvalue'] = 'nema';
+  // record if the record button is down
+  if ($("#record").hasClass("pressed")) {
+    // toneId is the octave number plus the note, so middle C (fourth octave) is "3C"
+    // octave numbers are zero-indexed
+    saveNote(toneId);
+  }
+};
 
-        if(sender != undefined && sender == 'mouse') {
-          setTimeout ("audiochannels[a]['channel'].pause()", 2500 );
-          setTimeout ("audiochannels[a]['channel'].currentTime = 0", 2500 );
-        } else {
-          //audiochannels[a]['channel'].volume=0;
-          setTimeout ("audiochannels[a]['channel'].pause()", 2500 );
-          setTimeout ("audiochannels[a]['channel'].currentTime = 0", 2500 );
-        }
-      } catch(v) {
-        console.log(v.message);
-      }
-      break;
+function saveNote(s) {
+  // check if the note falls into a 50 millisecond window. if it does, it's part of a chord
+  if (currentNote[0]) {
+    if (currentTime > currentNote[0][1] + 50) { // not part of previous note/chord
+      notes.push(currentNote);
+      currentNote = [];
     }
   }
+  currentNote.push([s, currentTime]);
 }
