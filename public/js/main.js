@@ -98,7 +98,7 @@ for (a = 0; a < channel_max; a++) { // prepare the channels
 
 //PLAY SOUND
 function play_multi_sound(s) {
-  for (a=0;a <audiochannels.length; a++) {
+  for (a = 0; a < audiochannels.length; a++) {
     thistime = new Date();
     if (audiochannels[a]['finished'] < thistime.getTime()) { // is this channel finished?
       try {
@@ -110,7 +110,7 @@ function play_multi_sound(s) {
         audiochannels[a]['keyvalue'] = s;
       }
       catch(v) {
-
+        console.log(v);
       }
       break;
     }
