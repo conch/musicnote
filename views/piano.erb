@@ -10,14 +10,6 @@
     <script src="js/main.js"></script>
   </head>
   <body>
-    <!-- <nav class="left"> -->
-      <!-- <h1>HTML5 Piano FULL</h1> -->
-      <!-- <span id="toggleKeyNames">Toggle piano key names On/Off</span> -->
-      <!-- <span id="toggleKeyboardKeysNames">Toggle keyboard key names On/Off</span> -->
-    <!-- </nav> -->
-    <!-- <nav class="right"> -->
-    <!-- <a id="Octaves" style="float: right;">Octaves</a><br /> -->
-    <!-- </nav> -->
     <div id="piano">
       <div id="pianoBody">
         <div id="littleRedLine"></div>
@@ -141,14 +133,16 @@
           </div>
         </div>
         <div id="o7" class="octave">
-          <div id="7C" class="key white" ><div class="keyname">C</div><div class="oN">8</div></div>
+          <div id="7C" class="key white"><div class="keyname">C</div><div class="oN">8</div></div>
         </div>
       </div>
     </div>
     <div id="menu">
-      <div id="transcribe">Transcribe</div>
+      <div id="record"><div id="recordOrPause" class="record"></div></div>
       <div id="reset">Reset</div>
       <div id="view">View Sheet Music</div>
+      <div id="toggleKeyNames">Toggle Key Names</div>
+      <div id="toggleOctaves">Toggle Octave Numbers</div>
     </div>
     <!-- AudioFiles Section http://pianosounds.pixelass.com/tones/grand-piano/ -->
     <div id="pianoStrings">

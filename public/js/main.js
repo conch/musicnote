@@ -1,54 +1,53 @@
 var PIANO_KEYS = 88;
+var trebleNotes = []; // queue that keeps track of the notes that have been recorded in the treble staff
+var bassNotes = []; // queue that keeps track of the notes in the bass staff
 
 $(document).ready(function() {
-  // position the menu bar
+  // create the menu bar
   $("#menu").css("top", $("#piano").height() + 100 + "px");
   $("#menu div").click(function() {
     buttonId = $(this).attr("id");
-    if (buttonId == "transcribe") { // start or stop transcribing
+    if (buttonId == "record") { // start/resume or stop recording
       $(this).toggleClass("pressed");
-    } else if (buttonId == "reset") { // erase what's been transcribed so far
-      $("#transcribe").removeClass("pressed");
-    } else { // view sheet music
+      $("#recordOrPause").toggleClass("record");
+      $("#recordOrPause").toggleClass("pause");
+    } else if (buttonId == "reset") { // erase what's been recorded so far
+      $("#record").removeClass("pressed");
+      $("#recordOrPause").addClass("record");
+      $("#recordOrPause").removeClass("pause");
+      trebleNotes = [];
+      bassNotes = [];
+    } else if (buttonId == "view") { // view sheet music
       window.location.href = "sheet_music";
+    } else if (buttonId == "toggleKeyNames") {
+      $("#piano div.keyname").toggle();
+      $(this).toggleClass("pressed");
+    } else if (buttonId == "toggleOctaves") {
+      $("#piano div.oN").toggle();
+      $(this).toggleClass("pressed");
     }
-  })
+  });
+
+  // configure key presses
   $(".key").mousedown(function () {
     toneId = $(this).attr('id');
     play_multi_sound("tone-" + toneId);
-    // regex = /(\d+)\D+/;
-    // match = regex.exec(toneId);
-    // console.log(match[1] < 3);
+    // record if the record button is down
+    if ($("#record").hasClass("pressed")) {
+      // toneId is the octave number plus the note, so middle C (fourth octave) is "3C"
+      // octave numbers are zero-indexed
+      regex = /(\d+)\D+/;
+      match = regex.exec(toneId);
+      // match[1] is the number of the octave
+      if (match[1] < 3) { // notes in the bass staff
+        trebleNotes.push(toneId);
+      } else { // treble
+        bassNotes.push(toneId);
+      }
+    }
   });
 
-  $(".key").mouseup(function () {
-      toneId = $(this).attr('id');
-      // stop_multi_sound('tone-' + toneId, 'mouse');
-   });
-
   //Toggles and other stuffs
-  $("#piano div.keyname").hide();
-  $("#piano div.kbkeyname").hide();
-
-  $("#toggleKeyNames").click(function () {
-    $("#piano div.kbkeyname").hide();
-    $("#toggleKeyboardKeysNames").removeClass('on');
-    $("#piano div.keyname").toggle();
-    $(this).toggleClass('on');
-   });
-
-  $("#toggleKeyboardKeysNames").click(function () {
-    $("#piano div.keyname").hide();
-    $("#toggleKeyNames").removeClass('on');
-    $("#piano div.kbkeyname").toggle();
-    $(this).toggleClass('on');
-   });
-
-  $("#Octaves").click(function () {
-    $("#piano div.oN").toggle();
-    $(this).toggleClass('on');
-   });
-
   $("#Strings").click(function () {
     $("#pianoStrings").toggle();
     $(this).toggleClass('on');
