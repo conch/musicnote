@@ -18,7 +18,24 @@ $(document).ready(function() {
       notes = [];
       currentNote = [];
     } else if (buttonId == "view") { // view sheet music
-      window.location.href = "sheet_music";
+      // add last note
+      if (currentNote.length > 0) {
+        notes.push(currentNote);
+        currentNote = [];
+      }
+      // redirect to sheet music page
+      url = "sheet_music/";
+      for (i = 0; i < notes.length; i++) {
+        url += "|";
+        for (j = 0; j < notes[i].length; j++) {
+          if (j != 0) {
+            url += "_";
+          }
+          url += notes[i][j][0];
+        }
+        url += "|";
+      }
+      window.location.href = url;
     } else if (buttonId == "toggleKeyNames") {
       $("#piano div.keyname").toggle();
       $(this).toggleClass("pressed");
@@ -110,20 +127,25 @@ function play_multi_sound(s) {
 var pressNote = function(toneId) {
   regex = /tone-(.+)/;
   match = regex.exec(toneId);
-  if (!match) {
-    toneId = "tone-" + toneId;
-  }
-  play_multi_sound(toneId);
-
   // record if the record button is down
   if ($("#record").hasClass("pressed")) {
     // toneId is the octave number plus the note, so middle C (fourth octave) is "3C"
     // octave numbers are zero-indexed
-    saveNote(toneId);
+    if (match) {
+      saveNote(match[1]);
+    } else {
+      saveNote(toneId);
+    }
   }
+  // play audio
+  if (!match) {
+    toneId = "tone-" + toneId;
+  }
+  play_multi_sound(toneId);
 };
 
 function saveNote(s) {
+  currentTime = new Date().getTime();
   // check if the note falls into a 50 millisecond window. if it does, it's part of a chord
   if (currentNote[0]) {
     if (currentTime > currentNote[0][1] + 50) { // not part of previous note/chord

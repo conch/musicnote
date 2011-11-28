@@ -1,21 +1,79 @@
+<% stems = notes.scan(/\|(\w+)\|/) %>
+
 <html>
   <head>
-    <script src="js/jquery.min.js"></script>
-    <script src="js/raphael-min.js"></script>
-    <script src="js/vexflow.js"></script>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/vexflow.js"></script>
     <script>
       $(document).ready(function() {
         var canvas = $("canvas")[0];
         var renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
         var ctx = renderer.getContext();
-        var stave = new Vex.Flow.Stave(0, 0, 500);
-        stave.addClef("treble").setContext(ctx).draw();
-        // stave.addClef("bass").setContext(ctx).draw();
-        // console.log();
+
+        // draw staves and notes. each stave can hold 16 stems
+        <% for s in 0..(stems.size / 16.0).floor %>
+          // setup treble and bass staves
+          var trebleStave = new Vex.Flow.Stave(0, 95 + 300*<%= s %>, 799);
+          trebleStave.addClef("treble").setContext(ctx).draw();
+          var bassStave = new Vex.Flow.Stave(0, 95 + 300*<%= s %> + 60, 799);
+          bassStave.addClef("bass").setContext(ctx).draw();
+          // assemble notes
+          var notes = [];
+          <% for n in s*16..([(s+1)*16, stems.size].min - 1) %>
+            <% matches = stems[n][0].scan(/(\d+)([a-zA-Z]+)/) %>
+            ks = []; // holds all the keys
+            acc = []; // holds all accidentals. indices match up with indices of ks
+            <% for m in 0..(matches.size - 1) %>
+              octave = "<%= matches[m][0] %>";
+              tone = "<%= matches[m][1] %>";
+              // convert octave number from piano to real octave numbers
+              // 00 from piano is the 0th octave
+              // 0 from piano is the 1st octave
+              // 1 from piano is the 2nd octave
+              // etc.
+              octaveNum = 0;
+              if (octave != "00") {
+                octaveNum = parseInt(octave) + 1;
+              }
+              // make the tone lowercase and parse out accidentals
+              key = tone[0].toLowerCase();
+              ks[<%= m %>] = key + "/" + octaveNum;
+
+              if (tone.length == 2) { // has accidental
+                if (tone[1] == "s")
+                  acc[<%= m %>] = "#";
+                else
+                  acc[<%= m %>] = "b";
+              }
+            <% end %>
+            staveNote = new Vex.Flow.StaveNote({ keys: ks, duration: "q"});
+            // add accidentals
+            for (a = 0; a < acc.length; a++) {
+              if (acc[a]) {
+                staveNote.addAccidental(a, new Vex.Flow.Accidental(acc[a]));
+              }
+            }
+            notes.push(staveNote);
+          <% end %>
+
+          // draw everything
+          // Create a voice
+          var voice = new Vex.Flow.Voice({
+            num_beats: notes.length,
+            beat_value: 4,
+            resolution: Vex.Flow.RESOLUTION
+          });
+          // Add notes to voice
+          voice.addTickables(notes);
+          // Format and justify the notes to 500 pixels
+          var formatter = new Vex.Flow.Formatter().joinVoices([voice]).format([voice], (notes.length / 16) * 800);
+          // Render voice
+          voice.draw(ctx, trebleStave);
+        <% end %>
       });
     </script>
   </head>
   <body>
-    <canvas width="525" height="120"></canvas>
+    <canvas width="800" height="600"></canvas>
   </body>
 </html>
