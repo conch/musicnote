@@ -8,6 +8,7 @@
     <script src="../js/vexflow.js"></script>
     <script>
       $(document).ready(function() {
+        // generate sheet music
         var canvas = $("canvas")[0];
         var renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
         var ctx = renderer.getContext();
@@ -20,7 +21,7 @@
           var bassStave = new Vex.Flow.Stave(0, 95 + 300*<%= s %> + 60, 799);
           bassStave.addClef("bass").setContext(ctx).draw();
           // assemble notes
-          var notes = [];
+          var stems = [];
           <% for n in s*16..([(s+1)*16, stems.size].min - 1) %>
             <% matches = stems[n][0].scan(/(\d+)([a-zA-Z]+)/) %>
             ks = []; // holds all the keys
@@ -55,20 +56,20 @@
                 staveNote.addAccidental(a, new Vex.Flow.Accidental(acc[a]));
               }
             }
-            notes.push(staveNote);
+            stems.push(staveNote);
           <% end %>
 
           // draw everything
           // Create a voice
           var voice = new Vex.Flow.Voice({
-            num_beats: notes.length,
+            num_beats: stems.length,
             beat_value: 4,
             resolution: Vex.Flow.RESOLUTION
           });
           // Add notes to voice
-          voice.addTickables(notes);
+          voice.addTickables(stems);
           // Format and justify the notes to 500 pixels
-          var formatter = new Vex.Flow.Formatter().joinVoices([voice]).format([voice], (notes.length / 16) * 800);
+          var formatter = new Vex.Flow.Formatter().joinVoices([voice]).format([voice], (stems.length / 16) * 800);
           // Render voice
           voice.draw(ctx, trebleStave);
         <% end %>
@@ -77,9 +78,8 @@
   </head>
   <body>
     <div id="menu" style="position: static; width:800px">
-      <div id="edit">Continue to Edit</div>
       <div id="saveToEvernote">Save to Evernote</div>
     </div>
-    <canvas width="800" height="<%= (stems.size / 16.0).ceil * 300 %>"></canvas>
+    <canvas width="800" height="<%= (stems.size / 16.0).ceil * 350 %>"></canvas>
   </body>
 </html>

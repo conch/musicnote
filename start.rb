@@ -6,5 +6,5 @@ get "/" do
 end
 
 get "/sheet_music/:notes" do
-  erb :sheet_music, :locals => {:notes => params[:notes]}
+  erb :sheet_music, :locals => params
 end
