@@ -20,5 +20,5 @@ get "/sheet_music/:notes" do
 end
 
 get "/notebooks" do
-  Evernote.get_notebooks(params["u"])
+  Evernote.get_notebooks(params["username"])
 end

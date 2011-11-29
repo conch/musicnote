@@ -86,22 +86,17 @@
           $("#content").hide();
         });
         // load notebooks to <select>
-        $.ajax({
-          url: "/notebooks",
-          dataType: "json",
-          data: {
-            u : "cc_conch",
-            p : "hihihi"
-          },
-          type: "GET",
-          success: function(response) {
-            optionHTML = "";
-            for (o = 0; o < response.length; o++) {
-              optionHTML += "<option value=\"" + response[o][1] + "\">" + response[o][0] + "</option>";
-            }
-            $("#noteNotebook").html(optionHTML);
-          }
-        });
+        $.get("/notebooks",
+              { "username" : "cc_conch" },
+              function(response) {
+                optionHTML = "";
+                for (o = 0; o < response.length; o++) {
+                  optionHTML += "<option value=\"" + response[o][1] + "\">" + response[o][0] + "</option>";
+                }
+                $("#noteNotebook").html(optionHTML);
+              },
+              "json"
+        );
       });
 
       // Textboxes have gray words in the background that hint at what the boxes are for.
