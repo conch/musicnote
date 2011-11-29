@@ -1,7 +1,17 @@
 require "rubygems"
 require "sinatra"
+require "evernote"
+require "json"
 
 get "/" do
+  erb :login
+end
+
+post "/login" do
+  Evernote.login(params["username"], params["password"]).to_json
+end
+
+get "/piano" do
   erb :piano
 end
 
@@ -10,5 +20,5 @@ get "/sheet_music/:notes" do
 end
 
 get "/notebooks" do
-  erb :notebooks, :locals => params
+  Evernote.get_notebooks(params["u"])
 end

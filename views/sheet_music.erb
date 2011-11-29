@@ -96,9 +96,6 @@
           type: "GET",
           success: function(response) {
             optionHTML = "";
-            // $.each(response, function(k, v) {
-            //   optionHTML += "<option value=\"" + v + "\">" + k + "</option>";
-            // });
             for (o = 0; o < response.length; o++) {
               optionHTML += "<option value=\"" + response[o][1] + "\">" + response[o][0] + "</option>";
             }
