@@ -2,10 +2,11 @@
 
 <html>
   <head>
-    <link rel="stylesheet/less" type="text/css" href="../css/main.less" />
+    <link rel="stylesheet/less" type="text/css" href="../css/sheet_music.less" />
     <script src="../js/jquery.min.js"></script>
     <script src="../js/less-1.1.3.min.js" ></script>
     <script src="../js/vexflow.js"></script>
+    <script src="../js/canvas2image.js"></script>
     <script>
       $(document).ready(function() {
         // generate sheet music
@@ -16,9 +17,9 @@
         // draw staves and notes. each stave can hold 16 stems
         <% for s in 0..(stems.size / 16.0).floor %>
           // setup treble and bass staves
-          var trebleStave = new Vex.Flow.Stave(0, 95 + 300*<%= s %>, 799);
+          var trebleStave = new Vex.Flow.Stave(25, 95 + 300*<%= s %>, 800);
           trebleStave.addClef("treble").setContext(ctx).draw();
-          var bassStave = new Vex.Flow.Stave(0, 95 + 300*<%= s %> + 60, 799);
+          var bassStave = new Vex.Flow.Stave(25, 95 + 300*<%= s %> + 60, 800);
           bassStave.addClef("bass").setContext(ctx).draw();
           // assemble notes
           var stems = [];
@@ -73,13 +74,86 @@
           // Render voice
           voice.draw(ctx, trebleStave);
         <% end %>
+
+        // event handlers
+        $("#noteTitle").focus(function() {
+          $("#title").hide();
+        });
+        $("#noteTags").focus(function() {
+          $("#tags").hide();
+        });
+        $("#noteContent").focus(function() {
+          $("#content").hide();
+        });
+        // load notebooks to <select>
+        $.ajax({
+          url: "/notebooks",
+          dataType: "json",
+          data: {
+            u : "cc_conch",
+            p : "hihihi"
+          },
+          type: "GET",
+          success: function(response) {
+            optionHTML = "";
+            // $.each(response, function(k, v) {
+            //   optionHTML += "<option value=\"" + v + "\">" + k + "</option>";
+            // });
+            for (o = 0; o < response.length; o++) {
+              optionHTML += "<option value=\"" + response[o][1] + "\">" + response[o][0] + "</option>";
+            }
+            $("#noteNotebook").html(optionHTML);
+          }
+        });
       });
+
+      // Textboxes have gray words in the background that hint at what the boxes are for.
+      function positionBackgroundWords() {
+        $("#title").css("top", $("#noteTitle").position().top + 3);
+        $("#title").css("left", $("#noteTitle").position().left + 5);
+        $("#tags").css("top", $("#noteTags").position().top + 2);
+        $("#tags").css("left", $("#noteTags").position().left + 10);
+        $("#content").css("top", $("#noteContent").position().top + 8);
+        $("#content").css("left", $("#noteContent").position().left + 5);
+      }
+
+      function saveToEvernote() {
+        // get data URI of the JPG and embed it in an Evernote note.
+        var img = Canvas2Image.saveAsJPEG($("canvas")[0], true);
+        $("#menu").animate({"height" : 225}, "fast");
+        $("#form").show();
+        positionBackgroundWords();
+      }
+
+      function submit() {
+        
+      }
+
+      function cancel() {
+        $("#form").hide();
+        $("#menu").animate({"height" : 37}, "fast");
+      }
     </script>
   </head>
   <body>
-    <div id="menu" style="position: static; width:800px">
-      <div id="saveToEvernote">Save to Evernote</div>
+    <div id="menu">
+      <div id="save" onclick="saveToEvernote()">Save to Evernote</div>
+      <div id="form">
+        <input id="noteTitle" />
+        <span id="title">Title</span>
+        <div id="notebookAndTags">
+          <select id="noteNotebook"></select>
+          <input id="noteTags" />
+          <span id="tags">Tags</span>
+        </div>
+        <textarea id="noteContent"></textarea>
+        <span id="content">Comments...</span>
+        <div id="buttons">
+          <button onclick="submit()">Submit</button>
+          <button onclick="cancel()">Cancel</button>
+        </div>
+      </div>
     </div>
-    <canvas width="800" height="<%= (stems.size / 16.0).ceil * 350 %>"></canvas>
+    <canvas width="850" height="<%= (stems.size / 16.0).ceil * 350 %>"></canvas>
   </body>
 </html>

@@ -1,0 +1,64 @@
+#menu {
+  position: relative;
+  width: 850px;
+  top: 0;
+  left: 0;
+  background-color: #CFCFCF;
+  padding: 7px;
+
+  #save {
+    background-color: #69AA35;
+    display: inline-block;
+    cursor:pointer;
+    font: 14pt Verdana;
+    padding: 7px;
+
+    &:active, &.pressed {
+      background-color: #4DBDCB;
+    }
+  }
+
+  #form {
+    display: none;
+    margin-top: 10px;
+
+    input, textarea, div {
+      display: block;
+      width: 100%;
+
+      &#noteTitle {
+
+      }
+
+      &#notebookAndTags {
+        margin-top: 5px;
+
+        #noteNotebook {
+          width: 24%;
+          display: inline-block;
+        }
+
+        #noteTags {
+          width: 75%;
+          margin-left: 5px;
+          display: inline-block;
+        }
+      }
+
+      &#noteContent {
+        height: 100px;
+        margin-top: 5px;
+      }
+
+      &#buttons {
+        margin-top: 5px;
+      }
+    }
+
+    span {
+      color: #999;
+      position: absolute;
+      font-style: italic;
+    }
+  }
+}
