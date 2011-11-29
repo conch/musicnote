@@ -1,7 +1,7 @@
 var PIANO_KEYS = 88;
 var notes = []; // queue that keeps track of the notes that have been recorded
 var currentNote = []; // holds the current note or chord. each element is an array of tuples. each tuple has the form (toneId, time).
-
+var selectedOctaveNum = 4; // the octave that the user is currently playing in with the computer keyboard
 $(document).ready(function() {
   // create the menu bar
   $("#menu").css("top", $("#piano").height() + 100 + "px");
@@ -50,12 +50,6 @@ $(document).ready(function() {
     toneId = $(this).attr("id");
     pressNote(toneId);
   });
-
-  //Toggles and other stuffs
-  $("#Strings").click(function () {
-    $("#pianoStrings").toggle();
-    $(this).toggleClass('on');
-   });
 })
 
 //ARRAY WITH ALL THE KEYS
@@ -63,7 +57,7 @@ $(document).ready(function() {
 var keyboardKeys = new Array (PIANO_KEYS); 
 var k;
 
-for (k=0;k < PIANO_KEYS; k++) {
+for (k=0;k < PIANO_KEYS + 9; k++) {
   keyboardKeys[k] = eval("pKey" + k);
 }
 
@@ -71,21 +65,33 @@ for (k=0;k < PIANO_KEYS; k++) {
 for (i = 0; i < keyboardKeys.length; i++) {
     //BIND ON KEY DOWN
     $(document).bind('keydown', keyboardKeys[i], function (evt){
-      //check the flag: false - key is down, true - key is up
-      if(evt.data.flag) {
-        evt.data.flag = false;
-        $(evt.data.value).addClass('pressed');
-        pressNote(evt.data.sound);
+      // check if it's an octave changer key, or a piano key
+      if (!evt.data.value) { // octave changers have an undefined value variable
+        selectedOctaveNum = parseInt(evt.data.kbKey);
+      } else {
+        // play only if this note is part of the selected octave
+        oRegex = /#(\d+)\D+/;
+        match = oRegex.exec(evt.data.value);
+        octaveNum = 0;
+        if (match[1] != "00") {
+          octaveNum = parseInt(match[1]) + 1;
+        }
+        if (octaveNum == selectedOctaveNum) {
+          //check the flag: false - key is down, true - key is up
+          if(evt.data.flag) {
+            evt.data.flag = false;
+            $(evt.data.value).addClass('pressed');
+            pressNote(evt.data.sound);
+          }
+        }
       }
       return false;
     });
 
     //BIND ON KEY UP
     $(document).bind('keyup', keyboardKeys[i], function (evt){
-      //check the flag false - key is down, true - key is up
       evt.data.flag = true;
       $(evt.data.value).removeClass('pressed');
-      // stop_multi_sound(evt.data.sound); //don't so cool as shoud
       return false;
     });
 }
