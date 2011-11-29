@@ -2,6 +2,7 @@ var PIANO_KEYS = 88;
 var notes = []; // queue that keeps track of the notes that have been recorded
 var currentNote = []; // holds the current note or chord. each element is an array of tuples. each tuple has the form (toneId, time).
 var selectedOctaveNum = 4; // the octave that the user is currently playing in with the computer keyboard
+
 $(document).ready(function() {
   // create the menu bar
   $("#menu").css("top", $("#piano").height() + 100 + "px");
