@@ -6,7 +6,7 @@
   background-color: #CFCFCF;
   padding: 7px;
 
-  #save {
+  #save, #back {
     background-color: #69AA35;
     display: inline-block;
     cursor:pointer;
@@ -26,10 +26,6 @@
       display: block;
       width: 100%;
 
-      &#noteTitle {
-
-      }
-
       &#notebookAndTags {
         margin-top: 5px;
 
@@ -38,27 +34,36 @@
           display: inline-block;
         }
 
-        #noteTags {
+        #noteTags, #fakeTags {
           width: 75%;
           margin-left: 5px;
           display: inline-block;
+
+          &#noteTags {
+            display: none;
+          }
         }
       }
 
-      &#noteContent {
+      &#noteContent, &#fakeContent {
         height: 100px;
         margin-top: 5px;
+
+        &#noteContent {
+          display: none;
+        }
       }
 
       &#buttons {
         margin-top: 5px;
-      }
-    }
 
-    span {
-      color: #999;
-      position: absolute;
-      font-style: italic;
+        #confirmation {
+          color: green;
+          font-weight: bold;
+          display: none;
+          margin-left: 10px;
+        }
+      }
     }
   }
 }

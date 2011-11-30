@@ -20,5 +20,9 @@ get "/sheet_music/:notes" do
 end
 
 get "/notebooks" do
-  Evernote.get_notebooks(params["username"])
+  Evernote.get_notebooks(params["username"]).to_json
+end
+
+post "/create_note" do
+  Evernote.create_note(params)
 end

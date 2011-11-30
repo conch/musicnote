@@ -16,7 +16,7 @@ require "Evernote/EDAM/note_store"
 require "Evernote/EDAM/limits_constants.rb"
 
 module Evernote
-  AUTH_TOKENS = {}
+  AUTH_TOKENS = {} # keeps track of everyone who has logged on since the server turned on. maps usernames to tokens/expiration/note stores
   evernote_host = "sandbox.evernote.com"
   user_store_url = "https://#{evernote_host}/edam/user"
   USER_STORE_URL_BASE = "https://#{evernote_host}/edam/note/"
@@ -39,31 +39,34 @@ module Evernote
     user = auth_result.user
     auth_token = auth_result.authenticationToken
     exp = auth_result.expiration
-    AUTH_TOKENS[u] = [auth_token, user, exp]
-    return true
-  end
-
-  def Evernote.get_notebooks(username)
-    # check auth token for the user and refresh if it'll expire within 10 minutes
-    user_info = AUTH_TOKENS[username]
-    auth_token = user_info[0]
-    user = user_info[1]
-    exp = user_info[2]
-
-    if exp < Time.now.to_i + 10 * 60
-      auth_result = USER_STORE.refreshAuthentication auth_token
-      user = auth_result.user
-      auth_token = auth_result.authenticationToken
-      exp = auth_result.expiration
-      AUTH_TOKENS[username] = [auth_token, user, exp]
-    end
-
-    # get notebooks
     note_store_url = USER_STORE_URL_BASE + user.shardId
     note_store_transport = Thrift::HTTPClientTransport.new(note_store_url)
     note_store_protocol = Thrift::BinaryProtocol.new(note_store_transport)
     note_store = Evernote::EDAM::NoteStore::NoteStore::Client.new(note_store_protocol)
+    AUTH_TOKENS[u] = [auth_token, exp, note_store]
+    return true
+  end
 
+  # check auth token for the user and refresh if it'll expire within 10 minutes
+  def Evernote.refresh_auth_token(username)
+    user_info = AUTH_TOKENS[username]
+    auth_token = user_info[0]
+    exp = user_info[1]
+    note_store = user_info[2]
+
+    if exp < Time.now.to_i + 10 * 60
+      auth_result = USER_STORE.refreshAuthentication auth_token
+      auth_token = auth_result.authenticationToken
+      exp = auth_result.expiration
+      AUTH_TOKENS[username] = [auth_token, exp, note_store]
+    end
+  end
+
+  def Evernote.get_notebooks(username)
+    refresh_auth_token username
+    auth_token = AUTH_TOKENS[username][0]
+    note_store = AUTH_TOKENS[username][2]
+    # get notebooks
     notebooks = note_store.listNotebooks(auth_token)
     notebook_names = notebooks.map do |book|
       name = book.name
@@ -73,6 +76,32 @@ module Evernote
       [name, book.guid]
     end
 
-    notebook_names.sort.to_json
+    notebook_names.sort
+  end
+
+  def Evernote.create_note(params)
+    username = params[:username]
+    refresh_auth_token username
+    auth_token = AUTH_TOKENS[username][0]
+    note_store = AUTH_TOKENS[username][2]
+    # assemble note
+    title = params[:title]
+    comments = params[:comments]
+    base64 = params[:base64]
+    tags = params[:tags].split(/\,+\s*/)
+    notebookGuid = params[:notebookGuid]
+
+    note = Evernote::EDAM::Type::Note.new()
+    note.title = title
+    note.content = "<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">" +
+                    "<en-note>" +
+                    "<pre>#{comments}</pre>" +
+                    "<img src=\"#{base64}\" />" +
+                    "</en-note>"
+    note.notebookGuid = notebookGuid
+    note.tagNames = tags
+
+    # actually create note in Evernote
+    note_store.createNote(auth_token, note)
   end
 end

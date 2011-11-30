@@ -38,11 +38,16 @@ $(document).ready(function() {
       }
       window.location.href = url;
     } else if (buttonId == "toggleKeyNames") {
-      $("#piano div.keyname").toggle();
+      $(".keyname").toggle();
       $(this).toggleClass("pressed");
     } else if (buttonId == "toggleOctaves") {
-      $("#piano div.oN").toggle();
+      $(".oN").toggle();
       $(this).toggleClass("pressed");
+    } else if (buttonId == "toggleKeyboard") {
+      $(this).toggleClass("pressed");
+    } else if (buttonId == "logout") {
+      $.cookie("evernote_username", null);
+      window.location.href = "/";
     }
   });
 

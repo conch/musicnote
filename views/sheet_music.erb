@@ -4,6 +4,7 @@
   <head>
     <link rel="stylesheet/less" type="text/css" href="../css/sheet_music.less" />
     <script src="../js/jquery.min.js"></script>
+    <script src="../js/jquery.cookie.js"></script>
     <script src="../js/less-1.1.3.min.js" ></script>
     <script src="../js/vexflow.js"></script>
     <script src="../js/canvas2image.js"></script>
@@ -76,18 +77,19 @@
         <% end %>
 
         // event handlers
-        $("#noteTitle").focus(function() {
-          $("#title").hide();
+        $("#fakeTags").focus(function() {
+          $("#fakeTags").hide();
+          $("#noteTags").show();
+          $("#noteTags").focus();
         });
-        $("#noteTags").focus(function() {
-          $("#tags").hide();
-        });
-        $("#noteContent").focus(function() {
-          $("#content").hide();
+        $("#fakeContent").focus(function() {
+          $("#fakeContent").hide();
+          $("#noteContent").show();
+          $("#noteContent").focus();
         });
         // load notebooks to <select>
         $.get("/notebooks",
-              { "username" : "cc_conch" },
+              { "username" : $.cookie("evernote_username") },
               function(response) {
                 optionHTML = "";
                 for (o = 0; o < response.length; o++) {
@@ -99,26 +101,31 @@
         );
       });
 
-      // Textboxes have gray words in the background that hint at what the boxes are for.
-      function positionBackgroundWords() {
-        $("#title").css("top", $("#noteTitle").position().top + 3);
-        $("#title").css("left", $("#noteTitle").position().left + 5);
-        $("#tags").css("top", $("#noteTags").position().top + 2);
-        $("#tags").css("left", $("#noteTags").position().left + 10);
-        $("#content").css("top", $("#noteContent").position().top + 8);
-        $("#content").css("left", $("#noteContent").position().left + 5);
-      }
-
       function saveToEvernote() {
         // get data URI of the JPG and embed it in an Evernote note.
-        var img = Canvas2Image.saveAsJPEG($("canvas")[0], true);
         $("#menu").animate({"height" : 225}, "fast");
         $("#form").show();
-        positionBackgroundWords();
+      }
+
+      function backToPiano() {
+        window.location.href = "/piano";
       }
 
       function submit() {
-        
+        $.post("/create_note",
+              {
+                "username" : $.cookie("evernote_username"),
+                "title" : $("#noteTitle").val(),
+                "comments" : $("#noteContent").val(),
+                "base64" : $(Canvas2Image.saveAsJPEG($("canvas")[0], true)).attr("src"),
+                "tags" : $("#noteTags").val(),
+                "notebookGuid" : $("#noteNotebook").val()
+              },
+              function() {
+                $("#confirmation").css("display", "inline");
+              },
+              "json"
+        );
       }
 
       function cancel() {
@@ -130,19 +137,23 @@
   <body>
     <div id="menu">
       <div id="save" onclick="saveToEvernote()">Save to Evernote</div>
+      <div id="back" onclick="backToPiano()">Back to Piano</div>
       <div id="form">
-        <input id="noteTitle" />
-        <span id="title">Title</span>
+        <input id="noteTitle" value="Untitled" />
         <div id="notebookAndTags">
           <select id="noteNotebook"></select>
           <input id="noteTags" />
-          <span id="tags">Tags</span>
+          <!-- The fake elements are used for this UI thing: textboxes initially have
+          text that hints at what the user is supposed to type in. when they click in 
+          the box, the instructions should disappear. -->
+          <input id="fakeTags" value="Tags (comma-separated)" />
         </div>
         <textarea id="noteContent"></textarea>
-        <span id="content">Comments...</span>
+        <textarea id="fakeContent">Comments...</textarea>
         <div id="buttons">
           <button onclick="submit()">Submit</button>
           <button onclick="cancel()">Cancel</button>
+          <div id="confirmation">Saved!</div>
         </div>
       </div>
     </div>
