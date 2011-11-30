@@ -4,8 +4,8 @@ var currentNote = []; // holds the current note or chord. each element is an arr
 var selectedOctaveNum = 4; // the octave that the user is currently playing in with the computer keyboard
 
 $(document).ready(function() {
-  // create the menu bar
-  $("#menu").css("top", $("#piano").height() + 100 + "px");
+  // configure the menu bar
+  $("#menu").css("top", $("#piano").height() + 200 + "px");
   $("#menu div").click(function() {
     buttonId = $(this).attr("id");
     if (buttonId == "record") { // start/resume or stop recording
@@ -45,6 +45,7 @@ $(document).ready(function() {
       $(this).toggleClass("pressed");
     } else if (buttonId == "toggleKeyboard") {
       $(this).toggleClass("pressed");
+      $(".kbkeyname").toggle();
     } else if (buttonId == "logout") {
       $.cookie("evernote_username", null);
       window.location.href = "/";

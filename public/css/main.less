@@ -73,17 +73,25 @@
       }
 
       .key {
-        .keyname {
-            font-size: 4em;
-            margin: 282px 1px 0 0;
+        position: relative;
+        .kbkeyname, .keyname {
+            position: absolute;
             display: none;
+
+            &.kbkeyname {
+              color: #9C0413;
+            }
+
+            &.keyname {
+              color: #ff9000;
+            }
         }
 
         .oN {
-          bottom: 75px;
           font-size: 3em;
+          top: 50px;
           left: 32px;
-          margin: 0 0 0 0;
+          margin: 0;
           position: absolute;
           display: none;
         }
@@ -106,9 +114,20 @@
             .gradient(center bottom , #FFFFFF 90%, #CCCCCC 100%);
           }
 
-          .keyname {
-            color: #ff9000;
-            text-shadow: 2px 2px 0 #7E6D1F;
+          .kbkeyname, .keyname {
+            font-size: 4em;
+
+            &.kbkeyname {
+              text-shadow: 1px 1px 0 #7E6D1F;
+              top: 210px;
+              left: 33px;
+            }
+
+            &.keyname {
+              text-shadow: 2px 2px 0 #7E6D1F;
+              top: 280px;
+              left: 23px;
+            }
           }
         }
 
@@ -133,16 +152,32 @@
             .box-shadow(0 0 6px 7px #303030 inset, 0 -5px #F7F7F7 inset);
           }
 
-          .keyname {
-            font-size: 1.6em;
-            margin: 113px 0 0 0;
-            color: #ff9000;
-            text-shadow: 1px 1px 0 #7E6D1F;
+          .kbkeyname, .keyname {
+            &.kbkeyname {
+              font-size: 2em;
+              text-shadow: 1px 1px 0 #B31706;
+              margin: 0;
+              top: 70px;
+              left: 13px;
+            }
+
+            &.keyname {
+              font-size: 1.6em;
+              top: 115px;
+              margin: 0;
+              text-shadow: 1px 1px 0 #7E6D1F;
+            }
           }
         }
       }
     }
   }
+}
+
+#instructions {
+  position: fixed;
+  top: 390px;
+  left: 50px;
 }
 
 #menu {
