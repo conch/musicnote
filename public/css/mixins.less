@@ -1,0 +1,32 @@
+.border-radius(@a) {
+  border-radius: @a;
+  -webkit-border-radius: @a;
+  -moz-border-radius: @a;
+}
+
+.gradient(@start_position, @start, @end) {
+  background-image: -webkit-gradient(@start_position, @start, @end);
+  background-image: -moz-linear-gradient(@start_position, @start, @end);
+  background-image: -gradient(@start_position, @start, @end);
+}
+.gradient(@start_pos, @end_pos, @start_color, @end_color) {
+  background-image: -webkit-gradient(linear, @start_pos, @end_pos, from(@start_color), to(@end_color));
+  background-image: -moz-linear-gradient(@start_pos, @start_color, @end_color);
+}
+
+.box-shadow(@a) {
+  -webkit-box-shadow: @a;
+  -moz-box-shadow: @a;
+  box-shadow: @a;
+}
+.box-shadow(@a, @b) {
+  -webkit-box-shadow: @a, @b;
+  -moz-box-shadow: @a, @b;
+  box-shadow: @a, @b;
+}
+
+.user-select(@a) {
+  -webkit-user-select: @a;
+  -moz-user-select: @a;
+  user-select: @a;
+}
