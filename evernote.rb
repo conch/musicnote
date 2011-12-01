@@ -6,6 +6,7 @@ require "auth_secrets.rb"
 require "json"
 require "digest/md5"
 require "base64"
+require "htmlentities"
 
 require "thrift/types"
 require "thrift/struct"
@@ -89,7 +90,7 @@ module Evernote
     note_store = AUTH_TOKENS[username][2]
     # assemble note
     title = params[:title]
-    comments = params[:comments]
+    comments = HTMLEntities.new.encode params[:comments]
     base64 = params[:base64]
     tags = params[:tags].split(/\,+\s*/)
     notebookGuid = params[:notebookGuid]
