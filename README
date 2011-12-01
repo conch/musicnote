@@ -1,1 +1,9 @@
-The piano itself comes from http://www.html5piano.ilinov.eu/full/ (by Mihail Ilinov) with a bunch of code cleanup and refactoring.
+musicnote is a full-sized 88-key piano that you can play online. It generates sheet music from what you play. You have the option to upload it to your Evernote account. For those moments when you playing around with melodies and need to remember that awesome jam that you just came up with.
+
+The sheet music generation part is very primitive. It can handle single notes, chords, accidentals, and both treble and bass clefs, but nothing beyond that (e.g. timing, measures).
+
+The piano itself comes from http://www.html5piano.ilinov.eu/full/ (by Mihail Ilinov) with a bunch of code cleanup, refactoring, and improvements.
+
+Languages used: HTML5, CSS3, jQuery, Ruby
+
+Other tools: LESS (http://www.lesscss.org), Sinatra (http://http://www.sinatrarb.com/), Canvas2Image (http://www.nihilogic.dk/labs/canvas2image/), VexFlow (http://www.vexflow.com).
