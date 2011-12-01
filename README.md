@@ -23,4 +23,4 @@ The piano itself comes from <a href="http://www.html5piano.ilinov.eu/full/">Miha
 
 Languages used: HTML5, CSS3, jQuery, Ruby
 
-Other tools: <a href="http://www.lesscss.org">LESS</a>, <a href="http://http://www.sinatrarb.com/">Sinatra</a>, <a href="http://www.nihilogic.dk/labs/canvas2image/">Canvas2Image</a>, <a href="http://www.vexflow.com">VexFlow</a>
+Other tools: <a href="http://www.lesscss.org">LESS</a>, <a href="http://http://www.sinatrarb.com/">Sinatra</a>, <a href="http://www.vexflow.com">VexFlow</a>

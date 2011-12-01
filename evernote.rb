@@ -4,6 +4,9 @@ $LOAD_PATH.push("#{dir}/evernote/Evernote/EDAM")
 
 require "auth_secrets.rb"
 require "json"
+require "digest/md5"
+require "base64"
+
 require "thrift/types"
 require "thrift/struct"
 require "thrift/protocol/base_protocol"
@@ -91,15 +94,27 @@ module Evernote
     tags = params[:tags].split(/\,+\s*/)
     notebookGuid = params[:notebookGuid]
 
+    # decode base64 and turn into binary
+    binary = Base64.decode64 base64
+    # create md5 hash of binary
+    hashHex = Digest::MD5.new.hexdigest(binary)
+    data = Evernote::EDAM::Type::Data.new()
+    data.bodyHash = hashHex
+    data.body = binary
+    resource = Evernote::EDAM::Type::Resource.new()
+    resource.mime = "image/png"
+    resource.data = data
+
     note = Evernote::EDAM::Type::Note.new()
     note.title = title
     note.content = "<!DOCTYPE en-note SYSTEM \"http://xml.evernote.com/pub/enml2.dtd\">" +
                     "<en-note>" +
                     "<pre>#{comments}</pre>" +
-                    "<img src=\"#{base64}\" />" +
+                    "<en-media type=\"image/png\" hash=\"" + hashHex + "\"/>" +
                     "</en-note>"
     note.notebookGuid = notebookGuid
     note.tagNames = tags
+    note.resources = [resource]
 
     # actually create note in Evernote
     note_store.createNote(auth_token, note)

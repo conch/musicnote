@@ -7,7 +7,6 @@
     <script src="../js/jquery.cookie.js"></script>
     <script src="../js/less-1.1.3.min.js" ></script>
     <script src="../js/vexflow.js"></script>
-    <script src="../js/canvas2image.js"></script>
     <script>
       $(document).ready(function() {
         // generate sheet music
@@ -112,12 +111,14 @@
       }
 
       function submit() {
+        regex = /data:image\/png;base64,(.+)/;
+        var base64 = regex.exec($("canvas")[0].toDataURL())[1];
         $.post("/create_note",
               {
                 "username" : $.cookie("evernote_username"),
                 "title" : $("#noteTitle").val(),
                 "comments" : $("#noteContent").val(),
-                "base64" : $(Canvas2Image.saveAsJPEG($("canvas")[0], true)).attr("src"),
+                "base64" : base64,
                 "tags" : $("#noteTags").val(),
                 "notebookGuid" : $("#noteNotebook").val()
               },
