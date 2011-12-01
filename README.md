@@ -6,7 +6,7 @@ The sheet music generation part is very primitive. It can handle single notes, c
 
 ## Installation
 
-You'll need to have RubyGems installed, and some gems (json, rack, sinatra).
+You'll need to have RubyGems installed, and some gems (json, rack, sinatra, htmlentities).
 
 To use the Evernote portion, you need to register to use <a href="http://www.evernote.com/about/developer/api/">their API</a>. You'll receive a Consumer Key and a Consumer Secret, which you must put into the auth_secrets.rb file. Also, this currently connects to the <a href="https://sandbox.evernote.com/">Evernote Sandbox</a>, so you'll need to create a user account there too.
 
