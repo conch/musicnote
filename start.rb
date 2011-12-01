@@ -3,6 +3,8 @@ require "sinatra"
 require "evernote"
 require "json"
 
+set :port, 80
+
 get "/" do
   erb :login
 end
