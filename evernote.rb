@@ -21,7 +21,7 @@ require "Evernote/EDAM/limits_constants.rb"
 
 module Evernote
   AUTH_TOKENS = {} # keeps track of everyone who has logged on since the server turned on. maps usernames to tokens/expiration/note stores
-  evernote_host = "sandbox.evernote.com"
+  evernote_host = "evernote.com"
   user_store_url = "https://#{evernote_host}/edam/user"
   USER_STORE_URL_BASE = "https://#{evernote_host}/edam/note/"
 
