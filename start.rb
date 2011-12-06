@@ -3,7 +3,10 @@ require "sinatra"
 require "evernote"
 require "json"
 
-set :port, 80
+configure do
+  set :port, 80
+  use Rack::CommonLogger, File.new('sinatra.log', 'w')
+end
 
 get "/" do
   erb :login
