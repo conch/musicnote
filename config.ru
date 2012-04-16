@@ -1,4 +1,4 @@
-require "ruby gems"
+require "rubygems"
 require "sinatra"
 require "start.rb"
 
